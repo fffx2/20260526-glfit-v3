@@ -3,7 +3,7 @@
    ───────────────────────────────────── */
 
 // ── API 키 (본인의 OpenAI API Key를 여기에 입력해 주세요)
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = '';
 
 // ── 업데이트된 플랫폼 데이터 정의
 const PLATFORMS = {
