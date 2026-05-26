@@ -1,11 +1,11 @@
 /* ─────────────────────────────────────
-   글핏 · app.js
+   글핏 · app.js (통합 보완 완본)
    ───────────────────────────────────── */
 
-// ── API 키 (본인의 OpenAI API Key를 여기에 입력해 주세요)
+// 🔒 보안 설정: API 키는 서버리스(Netlify Functions) 내부에서 안전하게 읽어오므로 공백으로 둡니다.
 const OPENAI_API_KEY = '';
 
-// ── 업데이트된 플랫폼 데이터 정의
+// ── 플랫폼 데이터 정의
 const PLATFORMS = {
   teacher:  ['안내사항', '과제 가이드', '생활기록부', '공문', '추천서', '학부모 안내문', '가정통신문'],
   student:  ['이메일', '자기소개서', '이력서', '서술형 포트폴리오'],
@@ -14,7 +14,7 @@ const PLATFORMS = {
   business: ['메신저', '이메일', '공식 제안서'],
 };
 
-// ── 페르소나별 최적화된 입력 가이드라인(플레이스홀더)
+// ── 페르소나별 최적화된 플레이스홀더
 const PLACEHOLDERS = {
   teacher:  "여기에 핵심 공지 내용을 입력하세요.\n예) 내일 2교시 축구장 이동수업, 단체 체육복 착용 필수, 물 개인 지참 요구.",
   student:  "여기에 전달할 상황이나 경험을 입력하세요.\n예) 공모전 수상 경력과 피그마 컴포넌트 협업 설계 역량을 강조하여 서술 바람.",
@@ -23,7 +23,7 @@ const PLACEHOLDERS = {
   business: "여기에 요청하거나 공유할 비즈니스 안건을 입력하세요.\n예) 상반기 정기 디자인 피드백 회의 일정을 조율하고자 함, 금주 목요일까지 회신 바람."
 };
 
-// ── 시스템 프롬프트 조립 엔진
+// ── 시스템 프롬프트 조립 엔진 (원본 프롬프트 가이드 완벽 반영)
 function buildSystemPrompt(persona, platform, target, purpose) {
   const personaPrompts = {
     teacher:
@@ -41,7 +41,7 @@ function buildSystemPrompt(persona, platform, target, purpose) {
   const platformPrompts = {
     '안내사항': `학급 공지사항, 교과 공지, 행사 안내 등 학생들에게 명확한 정보를 전달하는 안내문을 작성합니다.
 - 구조: 따뜻하고 다정한 첫인사 → 핵심 공지 내용(일시, 장소, 대상 등은 반드시 줄바꿈 후 기호나 숫자로 항목화) → 강조 및 당부사항 → 든든한 끝인사
-- 문체: "~바랍니다", "~해 주세요"와 같이 친절하면서도 교사로서의 성실함 Py명확함이 느껴지는 어조`,
+- 문체: "~바랍니다", "~해 주세요"와 같이 친절하면서도 교사로서의 성실함과 명확함이 느껴지는 어조`,
 
     '과제 가이드': `수행평가, 과제, 프로젝트 가이드라인 등 학생들이 과제를 수행할 때 참고할 지침서를 작성합니다.
 - 구조: 과제 명칭 및 개요 → 과제 수행 순서/방법 Step별 정리 → ★중요★ 제출 기한 및 제출 방법 → 채점 기준 및 유의사항 제시
@@ -95,6 +95,7 @@ function buildSystemPrompt(persona, platform, target, purpose) {
 
   const purposeLabels = {
     inform: '정보 전달',
+    passionate: '설득',
     persuade: '설득',
     request_cooperation: `타 부서나 클라이언트에게 업무 협조를 구하는 내용입니다.\n- 상대방의 노고에 대한 정중한 감사 표현 선행\n- 협조가 필요한 배경과 명확한 요청 사항 정의\n- 협조를 통해 기대되는 긍정적 효과 언급하며 부드럽고 정중하게 마무리`,
     request_submit: `특정 자료, 보고서, 증빙 서류 등의 제출을 요청하는 내용입니다.\n- 요청하는 서류의 명확한 명칭과 목적 서술\n- ★중요★ 제출 기한(날짜 및 시간)과 제출 방식(이메일, 시스템 업로드 등)을 명확하게 항목화하여 표기\n- 기한 준수를 요청하되 압박감을 주지 않는 프로페셔널한 어조 유지`,
@@ -165,7 +166,6 @@ function handleChipGroup(groupId, stateKey, callback) {
 
 // ── [STEP 1] 페르소나 선택 트리거
 handleChipGroup('persona-group', 'persona', (val) => {
-  // 플랫폼 하위 칩 새로 생성
   platformGroup.innerHTML = '';
   PLATFORMS[val].forEach(p => {
     const btn = document.createElement('button');
@@ -175,21 +175,22 @@ handleChipGroup('persona-group', 'persona', (val) => {
     platformGroup.appendChild(btn);
   });
 
-  // 페르소나에 맞춰 동적 플레이스홀더 주입
   if (PLACEHOLDERS[val]) {
     contentInput.placeholder = PLACEHOLDERS[val];
   } else {
     contentInput.placeholder = "여기에 핵심 내용을 입력하세요.";
   }
 
-  // 하위 선택 정보 전체 리셋 및 패널 일제히 숨김
+  // 데이터 구조 초기화
   state.platform = null;
   state.target = null;
   state.purpose = null;
-  ['step-target', 'step-input', 'step-result'].forEach(id => {
+  ['step-platform', 'step-target', 'step-input', 'step-result'].forEach(id => {
     const el = document.getElementById(id);
-    el.classList.add('hidden');
-    el.classList.remove('reveal');
+    if (el) {
+      el.classList.add('hidden');
+      el.classList.remove('reveal');
+    }
   });
   document.querySelectorAll('#target-group .chip, #purpose-group .chip').forEach(c => c.classList.remove('active'));
   checkGenBtn();
@@ -205,6 +206,7 @@ handleChipGroup('platform-group', 'platform', () => {
 // ── [STEP 3] 타겟 선택 트리거
 handleChipGroup('target-group', 'target', () => {
   checkGenBtn();
+  if (state.target && state.purpose) showStep(steps.input);
 });
 
 // ── [STEP 4] 목적 선택 트리거
@@ -221,20 +223,15 @@ function checkGenBtn() {
 
 contentInput.addEventListener('input', checkGenBtn);
 
-// ── 비동기 OpenAI 네트워킹 통신
+// ── 🔒 Netlify 서버리스 API 중계 시스템 통신부
 async function generateText() {
   const userContent = contentInput.value.trim();
   if (!userContent) return;
 
-  if (OPENAI_API_KEY === 'sk-REPLACE_WITH_YOUR_API_KEY' || !OPENAI_API_KEY) {
-    alert('app.js 파일 상단의 OPENAI_API_KEY를 올바른 키로 입력해 주세요.');
-    return;
-  }
-
   steps.result.classList.remove('hidden');
   steps.result.classList.add('reveal');
   resultText.textContent = '';
-  loading.classList.add('active');
+  loading.classList.add('active'); // 애니메이션 도트 활성화
   generateBtn.disabled = true;
   generateBtn.querySelector('.btn-text').textContent = '생성 중...';
 
@@ -243,26 +240,21 @@ async function generateText() {
   try {
     const systemPrompt = buildSystemPrompt(state.persona, state.platform, state.target, state.purpose);
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // 내부 API 호출 엔드포인트 릴레이 전송
+    const response = await fetch('/.netlify/functions/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user',   content: userContent },
-        ],
-        temperature: 0.75,
-        max_tokens: 1200,
+        prompt: systemPrompt,      
+        userContent: userContent   
       }),
     });
 
     if (!response.ok) {
       const err = await response.json();
-      throw new Error(err.error?.message || '알 수 없는 네트워크 오류');
+      throw new Error(err.error || '통신 처리 에러 발생');
     }
 
     const data = await response.json();
@@ -284,7 +276,7 @@ async function generateText() {
 generateBtn.addEventListener('click', generateText);
 regenBtn.addEventListener('click', generateText);
 
-// ── 원클릭 복사
+// ── 원클릭 복사 및 스타일 보정
 copyBtn.addEventListener('click', () => {
   const text = resultText.textContent;
   if (!text) return;

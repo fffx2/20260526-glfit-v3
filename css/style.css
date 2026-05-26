@@ -215,7 +215,7 @@ body {
   font-size: 0.85rem;
 }
 
-/* ── 생성 버튼 (강렬한 포인트 컬러 유지) ── */
+/* ── 생성 버튼 ── */
 .btn-generate {
   display: flex;
   align-items: center;
