@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>글핏 — 페르소나 글쓰기 도구</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="bg-gradient"></div>
+  <div class="bg-noise"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="#" class="logo">글핏<span class="logo-dot">.</span></a>
+      <p class="header-sub">페르소나에 맞는 글을 순식간에</p>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="card">
+
+      <section class="step" id="step-persona">
+        <p class="step-label">01 — 페르소나</p>
+        <h2 class="step-title">오늘 어떤 역할로 쓰시나요?</h2>
+        <div class="chip-group" id="persona-group">
+          <button class="chip" data-value="teacher">👩‍🏫 교사</button>
+          <button class="chip" data-value="student">👩‍🎓 학생</button>
+          <button class="chip" data-value="designer">🎨 디자이너·연구자</button>
+          <button class="chip" data-value="creator">✏️ 크리에이터</button>
+          <button class="chip" data-value="business">💼 업무 커뮤니케이션</button>
+        </div>
+      </section>
+
+      <section class="step hidden" id="step-platform">
+        <p class="step-label">02 — 플랫폼</p>
+        <h2 class="step-title">어떤 문서를 작성하시나요?</h2>
+        <div class="chip-group" id="platform-group"></div>
+      </section>
+
+      <section class="step hidden" id="step-target">
+        <div class="two-col">
+          <div class="col-box">
+            <p class="step-label">03 — 타겟</p>
+            <h2 class="step-title">누구에게?</h2>
+            <div class="chip-group" id="target-group">
+              <button class="chip" data-value="student">학생·친구</button>
+              <button class="chip" data-value="parent">학부모</button>
+              <button class="chip" data-value="colleague">동료·상사</button>
+              <button class="chip" data-value="teacher_target">교수님·선생님</button>
+              <button class="chip" data-value="client">클라이언트·인사담당자</button>
+              <button class="chip" data-value="public">불특정(대중)</button>
+            </div>
+          </div>
+          <div class="col-box">
+            <p class="step-label">04 — 목적</p>
+            <h2 class="step-title">왜 쓰시나요?</h2>
+            <div class="chip-group" id="purpose-group">
+              <button class="chip" data-value="inform">정보 전달</button>
+              <button class="chip" data-value="persuade">설득</button>
+              <button class="chip" data-value="request_cooperation">업무 협조 요청</button>
+              <button class="chip" data-value="request_submit">자료·서류 제출 요청</button>
+              <button class="chip" data-value="request">일반 문의·요청</button>
+              <button class="chip" data-value="promote">소개·홍보</button>
+              <button class="chip" data-value="record">기록·제출</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step hidden" id="step-input">
+        <p class="step-label">05 — 핵심 내용</p>
+        <h2 class="step-title">전달할 내용을 간략히 써주세요</h2>
+        <textarea
+          id="content-input"
+          class="textarea"
+          placeholder="여기에 핵심 내용을 입력하세요."
+          rows="5"
+        ></textarea>
+        <button class="btn-generate" id="generate-btn" disabled>
+          <span class="btn-text">글 생성하기</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </section>
+
+      <section class="step hidden" id="step-result">
+        <div class="result-header">
+          <p class="step-label">06 — 생성된 글</p>
+          <div class="result-actions">
+            <button class="btn-icon" id="regen-btn" title="다시 생성">↺ 재생성</button>
+            <button class="btn-icon" id="copy-btn" title="복사">복사</button>
+          </div>
+        </div>
+        <div class="result-box" id="result-box">
+          <div class="loading" id="loading">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="result-text" id="result-text"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>글핏 · 페르소나 기반 글쓰기 도구</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
